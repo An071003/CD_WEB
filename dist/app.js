@@ -1,5 +1,8 @@
 const $ = (id) => document.getElementById(id);
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+const loader = $('site-loader');
+const loaderCounter = $('loader-counter');
+const loaderImage = $('loader-image');
 const stage = $('disc-gallery');
 const detail = $('detail');
 const portal = $('portal');
@@ -26,6 +29,51 @@ const stars = (review) => '★'.repeat(Math.floor(Number(review.stars || 0))) + 
 const basePath = () => withRoot(category === 'films' ? '/' : '/television/');
 const detailPath = (film) => withRoot(`/production/${film.slug}/`);
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+const loadingStartedAt = performance.now();
+let loadingProgress = 0;
+if (loader) $('gallery').inert = true;
+const loadingTimer = loader && setInterval(() => {
+  loadingProgress = Math.min(92, Math.floor((performance.now() - loadingStartedAt) / 15));
+  loaderCounter.textContent = String(loadingProgress).padStart(2, '0');
+}, 32);
+
+async function finishLoading() {
+  if (!loader) return;
+  const displayedImage = discElements[currentIndex]?.querySelector('img');
+  const assetsReady = Promise.allSettled([
+    loaderImage.decode(),
+    displayedImage?.decode(),
+    document.fonts.ready,
+  ]);
+  const minimum = reducedMotion.matches ? 0 : 1200;
+  await Promise.all([
+    Promise.race([assetsReady, delay(5000)]),
+    delay(Math.max(0, minimum - (performance.now() - loadingStartedAt))),
+  ]);
+  clearInterval(loadingTimer);
+  if (!reducedMotion.matches) {
+    const from = loadingProgress;
+    const start = performance.now();
+    await new Promise((resolve) => {
+      const step = (now) => {
+        const progress = Math.min(1, (now - start) / 330);
+        const eased = 1 - (1 - progress) ** 3;
+        loaderCounter.textContent = String(Math.round(from + (100 - from) * eased)).padStart(2, '0');
+        if (progress < 1) requestAnimationFrame(step);
+        else resolve();
+      };
+      requestAnimationFrame(step);
+    });
+  } else loaderCounter.textContent = '100';
+  loader.classList.add('is-complete');
+  await delay(reducedMotion.matches ? 0 : 180);
+  loader.classList.add('is-leaving');
+  await delay(reducedMotion.matches ? 0 : 660);
+  loader.remove();
+  $('gallery').inert = false;
+  if (detailShown) $('detail-back').focus();
+}
 
 function slotFor(index) {
   const offset = index - currentIndex;
@@ -382,4 +430,4 @@ fetch(withRoot('/catalog.json')).then((response) => {
   setInitialRoute();
 }).catch(() => {
   $('index-panel').textContent = 'The catalog could not be loaded.';
-});
+}).finally(() => { void finishLoading(); });

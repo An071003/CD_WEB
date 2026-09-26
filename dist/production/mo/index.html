@@ -11,6 +11,12 @@
   <script src="/app.js" defer></script>
 </head>
 <body class="direct-detail">
+  <div class="site-loader" id="site-loader" role="status" aria-label="Loading A24 Television">
+    <div class="loader-head"><img src="/assets/a24-logo.svg" alt=""><span>Projecting</span><span class="loader-spinner" aria-hidden="true"></span></div>
+    <span class="loader-counter" id="loader-counter" aria-hidden="true">00</span>
+    <div class="loader-disc" aria-hidden="true"><img id="loader-image" src="/assets/television-mo.webp" alt="" fetchpriority="high" decoding="async"><span class="disc-hub"></span></div>
+    <span class="loader-side loader-left">A24 Television</span><span class="loader-side loader-right">2022–2025</span>
+  </div>
   <main class="gallery" id="gallery" aria-label="A24 film disc gallery">
     <h1 class="sr-only">Discover the A24 library of Films</h1>
     <section class="film-info" id="film-info" aria-live="polite">
