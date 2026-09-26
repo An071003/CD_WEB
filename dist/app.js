@@ -1,72 +1,105 @@
 const $ = (id) => document.getElementById(id);
-const category = location.pathname.startsWith('/television') ? 'television' : 'films';
+const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+const stage = $('disc-gallery');
+const detail = $('detail');
+const portal = $('portal');
+const iris = $('portal-iris');
+const zoomDisc = $('portal-disc');
+
+let data = { films: [], television: [] };
+let category = location.pathname.startsWith('/television') ? 'television' : 'films';
 let catalog = [];
 let currentIndex = 0;
+let discElements = [];
+let detailShown = false;
+let transitioning = false;
+let moving = false;
 let lastWheelAt = 0;
+let swipeStart = null;
+let suppressClick = false;
 
-const asText = (element, value) => { element.textContent = value || ''; };
 const current = () => catalog[currentIndex];
+const stars = (review) => '★'.repeat(Math.floor(Number(review.stars || 0))) + (Number(review.stars || 0) % 1 ? '½' : '');
+const basePath = () => category === 'films' ? '/' : '/television/';
+const detailPath = (film) => `/production/${film.slug}/`;
+const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-function updateStars(rating) {
-  const value = Number(rating.stars || 0);
-  return '★'.repeat(Math.floor(value)) + (value % 1 ? '½' : '');
+function slotFor(index) {
+  const offset = index - currentIndex;
+  return Math.abs(offset) <= 2 ? String(offset) : 'far';
 }
 
-function render() {
+function createDiscs() {
+  stage.replaceChildren();
+  discElements = catalog.map((film, index) => {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'disc-item';
+    button.dataset.index = String(index);
+    const face = document.createElement('span');
+    face.className = 'disc-face';
+    const image = document.createElement('img');
+    image.dataset.src = film.image;
+    image.alt = '';
+    image.draggable = false;
+    const hub = document.createElement('span');
+    hub.className = 'disc-hub';
+    face.append(image, hub);
+    button.append(face);
+    button.addEventListener('click', () => {
+      if (suppressClick) { suppressClick = false; return; }
+      const slot = button.dataset.slot;
+      if (slot === '0') openDetail();
+      else if (slot === '-1') move(-1);
+      else if (slot === '1') move(1);
+    });
+    stage.append(button);
+    return button;
+  });
+  positionDiscs();
+}
+
+function positionDiscs() {
+  discElements.forEach((button, index) => {
+    const slot = slotFor(index);
+    button.dataset.slot = slot;
+    button.tabIndex = ['-1', '0', '1'].includes(slot) ? 0 : -1;
+    button.setAttribute('aria-hidden', slot === 'far' || Math.abs(Number(slot)) === 2 ? 'true' : 'false');
+    button.setAttribute('aria-label', slot === '0' ? `Open ${catalog[index].title}` : `Browse to ${catalog[index].title}`);
+    const image = button.querySelector('img');
+    if (slot !== 'far' && !image.getAttribute('src')) image.src = image.dataset.src;
+    image.alt = slot === '0' ? `${catalog[index].title} disc artwork` : '';
+    if (slot !== '0') button.classList.remove('is-flipped');
+  });
+}
+
+function fillFilmInfo() {
   const film = current();
   if (!film) return;
-  asText($('film-title'), film.title);
-  asText($('film-director'), film.director);
-  asText($('film-year'), film.year);
+  $('film-title').textContent = film.title;
+  $('film-director').textContent = film.director;
+  $('film-year').textContent = film.year;
   const starring = $('film-starring');
   starring.replaceChildren();
-  film.starring.forEach((name, i) => {
-    if (i) starring.append(document.createElement('br'));
+  film.starring.forEach((name, index) => {
+    if (index) starring.append(document.createElement('br'));
     starring.append(document.createTextNode(name));
   });
-  $('disc-image').src = film.image;
-  $('disc-image').alt = `${film.title} disc artwork`;
-  $('previous-image').src = catalog[(currentIndex - 1 + catalog.length) % catalog.length].image;
-  $('next-image').src = catalog[(currentIndex + 1) % catalog.length].image;
-  $('previous-film').setAttribute('aria-label', `Previous: ${catalog[(currentIndex - 1 + catalog.length) % catalog.length].title}`);
-  $('next-film').setAttribute('aria-label', `Next: ${catalog[(currentIndex + 1) % catalog.length].title}`);
-  $('current-film').setAttribute('aria-label', `View details for ${film.title}`);
-  $('current-film').classList.remove('flipped');
   const reviews = $('reviews');
   reviews.replaceChildren();
   film.reviews.forEach((review) => {
-    const card = document.createElement('div');
-    const stars = document.createElement('span');
-    stars.className = 'review-stars';
-    stars.textContent = updateStars(review);
+    const item = document.createElement('div');
+    const rating = document.createElement('span');
+    rating.className = 'review-stars';
+    rating.textContent = stars(review);
     const publication = document.createElement('small');
     publication.textContent = review.publication;
     const quote = document.createElement('p');
-    quote.textContent = review.quote;
-    card.append(stars, publication, quote);
-    reviews.append(card);
+    quote.textContent = `“${review.quote}”`;
+    item.append(rating, publication, quote);
+    reviews.append(item);
   });
-  [...$('index-panel').querySelectorAll('button')].forEach((button, i) => button.setAttribute('aria-current', String(i === currentIndex)));
-  document.title = `A24 — ${category === 'films' ? 'Films' : 'Television'}`;
-}
-
-function move(delta) {
-  if (!catalog.length || !$('detail').hidden) return;
-  currentIndex = (currentIndex + delta + catalog.length) % catalog.length;
-  render();
-}
-
-function select(index) {
-  currentIndex = index;
-  render();
-  toggleIndex(false);
-}
-
-function toggleIndex(force) {
-  const panel = $('index-panel');
-  const open = typeof force === 'boolean' ? force : panel.hidden;
-  panel.hidden = !open;
-  $('index-toggle').setAttribute('aria-expanded', String(open));
+  [...$('index-panel').querySelectorAll('button')].forEach((button, index) => button.setAttribute('aria-current', String(index === currentIndex)));
 }
 
 function renderIndex() {
@@ -85,15 +118,46 @@ function renderIndex() {
   });
 }
 
-function openDetail() {
-  const film = current();
-  if (!film) return;
+function toggleIndex(force) {
+  const panel = $('index-panel');
+  const open = typeof force === 'boolean' ? force : panel.hidden;
+  panel.hidden = !open;
+  $('index-toggle').setAttribute('aria-expanded', String(open));
+}
+
+function select(index) {
+  if (transitioning || detailShown || index === currentIndex) { toggleIndex(false); return; }
+  currentIndex = index;
+  positionDiscs();
+  fillFilmInfo();
   toggleIndex(false);
-  asText($('detail-title'), film.title);
-  asText($('detail-category'), category === 'films' ? 'A24 FILM' : 'A24 TELEVISION');
+}
+
+function move(delta) {
+  if (transitioning || detailShown || moving || !catalog.length) return;
+  moving = true;
+  $('film-info').classList.add('is-swapping');
+  $('reviews').classList.add('is-swapping');
+  if (currentIndex + delta < 0 || currentIndex + delta >= catalog.length) { moving = false; $('film-info').classList.remove('is-swapping'); $('reviews').classList.remove('is-swapping'); return; }
+  currentIndex += delta;
+  positionDiscs();
+  setTimeout(() => {
+    fillFilmInfo();
+    $('film-info').classList.remove('is-swapping');
+    $('reviews').classList.remove('is-swapping');
+  }, reducedMotion.matches ? 0 : 230);
+  setTimeout(() => { moving = false; }, reducedMotion.matches ? 0 : 760);
+}
+
+function populateDetail(film) {
+  $('detail-title').textContent = film.title;
+  $('detail-category').textContent = film.category === 'films' ? 'A24 FILM' : 'A24 TELEVISION';
+  $('detail-credits').textContent = `DIRECTED BY ${film.director}   ·   STARRING ${film.starring.join(', ')}`;
+  $('detail-art').src = film.image;
+  $('detail-art').alt = `${film.title} disc artwork`;
   const lines = $('detail-lines');
   lines.replaceChildren();
-  [['DIRECTED BY', film.director], ['YEAR', film.year], ['STARRING', film.starring.join(', ')], ['COLLECTION', category === 'films' ? 'Films' : 'Television']].forEach(([label, value]) => {
+  [['YEAR', film.year], ['DIRECTED BY', film.director], ['STARRING', film.starring.join(', ')], ['COLLECTION', film.category === 'films' ? 'Films' : 'Television']].forEach(([label, value]) => {
     const row = document.createElement('div');
     const small = document.createElement('small');
     const span = document.createElement('span');
@@ -103,60 +167,216 @@ function openDetail() {
     lines.append(row);
   });
   const review = film.reviews[0];
-  $('detail-review').replaceChildren();
+  const target = $('detail-review');
+  target.replaceChildren();
   if (review) {
-    $('detail-review').append(document.createTextNode(`“${review.quote}”`));
+    target.append(document.createTextNode(`“${review.quote}”`));
     const small = document.createElement('small');
-    small.textContent = `${review.publication} · ${updateStars(review)}`;
-    $('detail-review').append(small);
+    small.textContent = `${review.publication}  ·  ${stars(review)}`;
+    target.append(small);
   }
-  $('detail').hidden = false;
-  $('detail-close').focus();
+  document.title = `A24 — ${film.title}`;
 }
 
-function closeDetail() {
-  $('detail').hidden = true;
-  $('current-film').focus();
+function portalGeometry(button) {
+  const rect = button.getBoundingClientRect();
+  const cx = rect.left + rect.width / 2;
+  const cy = rect.top + rect.height / 2;
+  const dx = innerWidth / 2 - cx;
+  const dy = innerHeight / 2 - cy;
+  const scale = Math.max(innerWidth, innerHeight) * 2.5 / rect.width;
+  const radius = Math.hypot(innerWidth, innerHeight) * 1.15;
+  return { rect, cx, cy, dx, dy, scale, radius };
 }
 
-$('previous-film').addEventListener('click', () => move(-1));
-$('next-film').addEventListener('click', () => move(1));
-$('current-film').addEventListener('click', openDetail);
+function preparePortal(film, geometry) {
+  portal.hidden = false;
+  portal.style.opacity = '1';
+  $('portal-image').src = film.image;
+  zoomDisc.style.left = `${geometry.rect.left}px`;
+  zoomDisc.style.top = `${geometry.rect.top}px`;
+  zoomDisc.style.width = `${geometry.rect.width}px`;
+  zoomDisc.style.height = `${geometry.rect.height}px`;
+  iris.style.setProperty('--origin-x', `${geometry.cx}px`);
+  iris.style.setProperty('--origin-y', `${geometry.cy}px`);
+}
+
+function finishPortal(animations) {
+  animations.forEach((animation) => animation.cancel());
+  portal.hidden = true;
+  portal.style.opacity = '1';
+  iris.style.clipPath = '';
+  zoomDisc.style.opacity = '';
+}
+
+async function openDetail(updateHistory = true) {
+  if (transitioning || detailShown || !current()) return;
+  transitioning = true;
+  toggleIndex(false);
+  const film = current();
+  const button = discElements[currentIndex];
+  populateDetail(film);
+  if (reducedMotion.matches) {
+    if (updateHistory) history.pushState({ film: film.slug }, '', detailPath(film));
+    detail.hidden = false;
+    detailShown = true;
+    stage.inert = true;
+    $('gallery').classList.add('detail-active');
+    detail.classList.add('is-visible');
+    $('detail-back').focus();
+    transitioning = false;
+    return;
+  }
+  const g = portalGeometry(button);
+  preparePortal(film, g);
+  button.style.visibility = 'hidden';
+  const enter = [
+    iris.animate([{ clipPath: `circle(0px at ${g.cx}px ${g.cy}px)` }, { clipPath: `circle(${g.radius}px at ${g.cx}px ${g.cy}px)` }], { duration: 780, easing: 'cubic-bezier(.23,.65,.12,1)', fill: 'forwards' }),
+    zoomDisc.animate([{ transform: 'translate(0,0) scale(1) rotate(-17deg) rotateY(-26deg)', opacity: 1 }, { transform: `translate(${g.dx}px,${g.dy}px) scale(${g.scale}) rotate(108deg) rotateY(125deg)`, opacity: 0 }], { duration: 800, easing: 'cubic-bezier(.2,.68,.08,1)', fill: 'forwards' }),
+  ];
+  await Promise.all(enter.map((animation) => animation.finished));
+  if (updateHistory) history.pushState({ film: film.slug }, '', detailPath(film));
+  detail.hidden = false;
+  detail.scrollTop = 0;
+  detailShown = true;
+  stage.inert = true;
+  $('gallery').classList.add('detail-active');
+  requestAnimationFrame(() => detail.classList.add('is-visible'));
+  const reveal = portal.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 420, easing: 'ease-out', fill: 'forwards' });
+  await reveal.finished;
+  finishPortal([...enter, reveal]);
+  button.style.visibility = '';
+  $('detail-back').focus();
+  transitioning = false;
+}
+
+async function closeDetail(updateHistory = true) {
+  if (transitioning || !detailShown) return;
+  transitioning = true;
+  const film = current();
+  if (reducedMotion.matches) {
+    detail.hidden = true;
+    detail.classList.remove('is-visible');
+    detailShown = false;
+    stage.inert = false;
+    $('gallery').classList.remove('detail-active');
+    document.body.classList.remove('direct-detail');
+    if (updateHistory) history.pushState({}, '', basePath());
+    document.title = `A24 — ${category === 'films' ? 'Films' : 'Television'}`;
+    discElements[currentIndex]?.focus();
+    transitioning = false;
+    return;
+  }
+  detail.classList.remove('is-visible');
+  detail.classList.add('is-leaving');
+  await delay(240);
+  const g = portalGeometry(discElements[currentIndex]);
+  preparePortal(film, g);
+  detail.hidden = true;
+  detail.classList.remove('is-leaving');
+  detailShown = false;
+  stage.inert = false;
+  $('gallery').classList.remove('detail-active');
+  document.body.classList.remove('direct-detail');
+  if (updateHistory) history.pushState({}, '', basePath());
+  document.title = `A24 — ${category === 'films' ? 'Films' : 'Television'}`;
+  const leave = [
+    iris.animate([{ clipPath: `circle(${g.radius}px at ${g.cx}px ${g.cy}px)` }, { clipPath: `circle(0px at ${g.cx}px ${g.cy}px)` }], { duration: 660, easing: 'cubic-bezier(.6,0,.18,1)', fill: 'forwards' }),
+    zoomDisc.animate([{ transform: `translate(${g.dx}px,${g.dy}px) scale(${g.scale}) rotate(108deg) rotateY(125deg)`, opacity: 0 }, { transform: 'translate(0,0) scale(1) rotate(-17deg) rotateY(-26deg)', opacity: 1 }], { duration: 660, easing: 'cubic-bezier(.6,0,.18,1)', fill: 'forwards' }),
+  ];
+  await Promise.all(leave.map((animation) => animation.finished));
+  finishPortal(leave);
+  discElements[currentIndex]?.focus();
+  transitioning = false;
+}
+
+function setCategory(nextCategory, index = 0) {
+  category = nextCategory;
+  catalog = data[category] || [];
+  currentIndex = index;
+  createDiscs();
+  renderIndex();
+  fillFilmInfo();
+  $('films-link').classList.toggle('active', category === 'films');
+  $('tv-link').classList.toggle('active', category === 'television');
+  document.title = `A24 — ${category === 'films' ? 'Films' : 'Television'}`;
+}
+
+function setInitialRoute() {
+  const match = location.pathname.match(/^\/production\/([^/]+)/);
+  if (!match) { setCategory(category); return; }
+  const selected = Object.entries(data).flatMap(([group, items]) => items.map((film, index) => ({ group, film, index }))).find((entry) => entry.film.slug === match[1]);
+  if (!selected) { setCategory(category); return; }
+  setCategory(selected.group, selected.index);
+  populateDetail(selected.film);
+  detail.hidden = false;
+  detailShown = true;
+  stage.inert = true;
+  $('gallery').classList.add('detail-active');
+  requestAnimationFrame(() => { detail.classList.add('is-visible'); $('detail-back').focus(); });
+}
+
 $('index-toggle').addEventListener('click', () => toggleIndex());
-$('detail-close').addEventListener('click', closeDetail);
-$('detail-back').addEventListener('click', closeDetail);
+$('detail-back').addEventListener('click', () => closeDetail());
 document.addEventListener('keydown', (event) => {
-  if (event.key === 'Escape') { if (!$('detail').hidden) closeDetail(); else toggleIndex(false); return; }
-  if (!$('detail').hidden || event.target.closest('.index-panel')) return;
+  if (event.key === 'Escape') { if (detailShown) closeDetail(); else toggleIndex(false); return; }
+  if (detailShown || transitioning || event.target.closest('.index-panel')) return;
   if (event.key === 'ArrowRight') { event.preventDefault(); move(1); }
   if (event.key === 'ArrowLeft') { event.preventDefault(); move(-1); }
-  if (event.code === 'Space' && (event.target === document.body || event.target === $('current-film'))) { event.preventDefault(); $('current-film').classList.toggle('flipped'); }
+  if (event.key === 'Enter' && (event.target === document.body || stage.contains(event.target))) {
+    event.preventDefault();
+    openDetail();
+  }
+  if (event.code === 'Space' && (event.target === document.body || stage.contains(event.target))) {
+    event.preventDefault();
+    discElements[currentIndex].classList.toggle('is-flipped');
+  }
 });
-document.addEventListener('wheel', (event) => {
-  if (event.target.closest('.dock, .detail') || Math.abs(event.deltaY) < 18) return;
+stage.addEventListener('wheel', (event) => {
+  if (Math.abs(event.deltaY) < 14) return;
   const now = Date.now();
-  if (now - lastWheelAt < 550) return;
+  if (now - lastWheelAt < 650) return;
   lastWheelAt = now;
   move(event.deltaY > 0 ? 1 : -1);
 }, { passive: true });
-let touchX = null;
-$('disc-gallery').addEventListener('touchstart', (event) => { touchX = event.touches[0].clientX; }, { passive: true });
-$('disc-gallery').addEventListener('touchend', (event) => {
-  if (touchX === null) return;
-  const distance = event.changedTouches[0].clientX - touchX;
-  if (Math.abs(distance) > 45) move(distance < 0 ? 1 : -1);
-  touchX = null;
-}, { passive: true });
+stage.addEventListener('pointerdown', (event) => { swipeStart = { x: event.clientX, y: event.clientY }; });
+stage.addEventListener('pointerup', (event) => {
+  if (!swipeStart) return;
+  const dx = event.clientX - swipeStart.x;
+  const dy = event.clientY - swipeStart.y;
+  if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy)) {
+    suppressClick = true;
+    move(dx < 0 ? 1 : -1);
+    setTimeout(() => { suppressClick = false; }, 400);
+  }
+  swipeStart = null;
+});
+stage.addEventListener('pointermove', (event) => {
+  if (!catalog.length || detailShown || moving || event.pointerType === 'touch') return;
+  const face = discElements[currentIndex]?.querySelector('.disc-face');
+  if (!face) return;
+  face.style.setProperty('--tilt-x', `${((event.clientX / innerWidth) - .5) * 6}deg`);
+  face.style.setProperty('--tilt-y', `${((event.clientY / innerHeight) - .5) * -5}deg`);
+});
+stage.addEventListener('pointerleave', () => {
+  const face = discElements[currentIndex]?.querySelector('.disc-face');
+  if (face) { face.style.removeProperty('--tilt-x'); face.style.removeProperty('--tilt-y'); }
+});
+window.addEventListener('popstate', () => {
+  const match = location.pathname.match(/^\/production\/([^/]+)/);
+  if (!match && detailShown) closeDetail(false);
+  else if (match && !detailShown) {
+    const index = catalog.findIndex((film) => film.slug === match[1]);
+    if (index >= 0) { currentIndex = index; positionDiscs(); fillFilmInfo(); openDetail(false); }
+  }
+});
 
 fetch('/catalog.json').then((response) => {
   if (!response.ok) throw new Error('Catalog unavailable');
   return response.json();
-}).then((data) => {
-  catalog = data[category] || [];
-  renderIndex();
-  render();
-  $('films-link').classList.toggle('active', category === 'films');
-  $('tv-link').classList.toggle('active', category === 'television');
+}).then((catalogData) => {
+  data = catalogData;
+  setInitialRoute();
 }).catch(() => {
   $('index-panel').textContent = 'The catalog could not be loaded.';
 });

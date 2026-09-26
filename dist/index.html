@@ -11,22 +11,29 @@
   <script src="/app.js" defer></script>
 </head>
 <body>
-  <main class="gallery" aria-label="A24 film disc gallery">
+  <main class="gallery" id="gallery" aria-label="A24 film disc gallery">
     <h1 class="sr-only">Discover the A24 library of Films</h1>
-    <section class="film-info" aria-live="polite">
+    <section class="film-info" id="film-info" aria-live="polite">
       <h2 id="film-title">Backrooms</h2>
       <div class="info-row"><span class="info-label">DIRECTED BY</span><span id="film-director">Kane Parsons</span></div>
       <div class="info-row"><span class="info-label">YEAR</span><span id="film-year">2026</span></div>
       <div class="info-row"><span class="info-label">STARRING</span><span id="film-starring">Chiwetel Ejiofor<br>Renate Reinsve</span></div>
     </section>
-    <div class="disc-gallery" id="disc-gallery" role="group" aria-label="Film discs">
-      <button class="disc-button disc-prev" id="previous-film" type="button" aria-label="Previous film"><span class="disc-face"><img id="previous-image" src="/assets/films-ex-machina.webp" alt=""><span class="disc-hub"></span></span></button>
-      <button class="disc-button disc-current" id="current-film" type="button" aria-label="View film details">
-        <span class="disc-face"><img id="disc-image" src="/assets/films-backrooms.webp" alt="Backrooms disc artwork"><span class="disc-hub"></span></span>
-      </button>
-      <button class="disc-button disc-next" id="next-film" type="button" aria-label="Next film"><span class="disc-face"><img id="next-image" src="/assets/films-the-invite.webp" alt=""><span class="disc-hub"></span></span></button>
-    </div>
+    <div class="disc-gallery" id="disc-gallery" role="group" aria-label="Film discs"></div>
     <div class="reviews" id="reviews" aria-live="polite"><div>★★★★★<small>THE PLAYLIST</small><p>Something Far More Haunting</p></div><div>★★★★★<small>THE DAILY BEAST</small><p>Casts A Surrealistic Spell</p></div></div>
+    <section class="detail-page" id="detail" aria-labelledby="detail-title" hidden>
+      <button class="detail-back" id="detail-back" type="button">← BACK TO GALLERY</button>
+      <div class="detail-content">
+        <p class="detail-kicker" id="detail-category">A24 FILM</p>
+        <h2 id="detail-title"></h2>
+        <p class="detail-credits" id="detail-credits"></p>
+        <div class="detail-lines" id="detail-lines"></div>
+        <div class="detail-lower">
+          <div class="detail-review" id="detail-review"></div>
+          <img class="detail-art" id="detail-art" alt="">
+        </div>
+      </div>
+    </section>
     <nav class="dock" aria-label="Main navigation">
       <a class="logo" href="/" aria-label="A24 home"><img src="/assets/a24-logo.svg" alt="A24"></a>
       <a id="films-link" class="active" href="/">Films</a>
@@ -34,10 +41,7 @@
       <button id="index-toggle" type="button" aria-expanded="false" aria-controls="index-panel">Index <span class="chevron">⌃</span></button>
       <div class="index-panel" id="index-panel" hidden></div>
     </nav>
-    <aside class="detail" id="detail" role="dialog" aria-modal="true" aria-labelledby="detail-title" hidden>
-      <button class="detail-close" id="detail-close" type="button" aria-label="Close film details">CLOSE ×</button>
-      <div class="detail-content"><p class="detail-kicker" id="detail-category">A24 FILM</p><h2 id="detail-title"></h2><div class="detail-lines" id="detail-lines"></div><div class="detail-review" id="detail-review"></div><button id="detail-back" type="button">BACK TO GALLERY ↗</button></div>
-    </aside>
   </main>
+  <div class="portal" id="portal" hidden aria-hidden="true"><div class="portal-iris" id="portal-iris"></div><div class="portal-disc" id="portal-disc"><img id="portal-image" alt=""><span class="portal-hub"></span></div></div>
 </body>
 </html>
