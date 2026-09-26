@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f2f2f2">
+  <meta name="description" content="Explore a gallery of A24 films through a collection of cinematic discs.">
+  <title>A24 — Films</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23f2f2f2'/%3E%3Ccircle cx='32' cy='32' r='26' fill='%23891a20'/%3E%3Ccircle cx='32' cy='32' r='6' fill='%23f2f2f2'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="/style.css">
+  <script src="/app.js" defer></script>
+</head>
+<body>
+  <main class="gallery" aria-label="A24 film disc gallery">
+    <h1 class="sr-only">Discover the A24 library of Films</h1>
+    <section class="film-info" aria-live="polite">
+      <h2 id="film-title">Backrooms</h2>
+      <div class="info-row"><span class="info-label">DIRECTED BY</span><span id="film-director">Kane Parsons</span></div>
+      <div class="info-row"><span class="info-label">YEAR</span><span id="film-year">2026</span></div>
+      <div class="info-row"><span class="info-label">STARRING</span><span id="film-starring">Chiwetel Ejiofor<br>Renate Reinsve</span></div>
+    </section>
+    <div class="disc-gallery" id="disc-gallery" role="group" aria-label="Film discs">
+      <button class="disc-button disc-prev" id="previous-film" type="button" aria-label="Previous film"><span class="disc-face"><img id="previous-image" src="/assets/films-ex-machina.webp" alt=""><span class="disc-hub"></span></span></button>
+      <button class="disc-button disc-current" id="current-film" type="button" aria-label="View film details">
+        <span class="disc-face"><img id="disc-image" src="/assets/films-backrooms.webp" alt="Backrooms disc artwork"><span class="disc-hub"></span></span>
+      </button>
+      <button class="disc-button disc-next" id="next-film" type="button" aria-label="Next film"><span class="disc-face"><img id="next-image" src="/assets/films-the-invite.webp" alt=""><span class="disc-hub"></span></span></button>
+    </div>
+    <div class="reviews" id="reviews" aria-live="polite"><div>★★★★★<small>THE PLAYLIST</small><p>Something Far More Haunting</p></div><div>★★★★★<small>THE DAILY BEAST</small><p>Casts A Surrealistic Spell</p></div></div>
+    <nav class="dock" aria-label="Main navigation">
+      <a class="logo" href="/" aria-label="A24 home"><img src="/assets/a24-logo.svg" alt="A24"></a>
+      <a id="films-link" class="active" href="/">Films</a>
+      <a href="/television/" id="tv-link">Television</a>
+      <button id="index-toggle" type="button" aria-expanded="false" aria-controls="index-panel">Index <span class="chevron">⌃</span></button>
+      <div class="index-panel" id="index-panel" hidden></div>
+    </nav>
+    <aside class="detail" id="detail" role="dialog" aria-modal="true" aria-labelledby="detail-title" hidden>
+      <button class="detail-close" id="detail-close" type="button" aria-label="Close film details">CLOSE ×</button>
+      <div class="detail-content"><p class="detail-kicker" id="detail-category">A24 FILM</p><h2 id="detail-title"></h2><div class="detail-lines" id="detail-lines"></div><div class="detail-review" id="detail-review"></div><button id="detail-back" type="button">BACK TO GALLERY ↗</button></div>
+    </aside>
+  </main>
+</body>
+</html>

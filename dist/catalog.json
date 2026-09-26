@@ -1,0 +1,654 @@
+{
+  "films": [
+    {
+      "title": "Backrooms",
+      "slug": "backrooms",
+      "category": "films",
+      "director": "Kane Parsons",
+      "year": "2026",
+      "starring": [
+        "Chiwetel Ejiofor",
+        "Renate Reinsve"
+      ],
+      "image": "/assets/films-backrooms.webp",
+      "sourceImage": "https://raviklaassens.b-cdn.net/a24/films/backrooms/disc.webp?v=7",
+      "reviews": [
+        {
+          "publication": "The Playlist",
+          "quote": "Something Far More Haunting",
+          "stars": "5"
+        },
+        {
+          "publication": "The Daily Beast",
+          "quote": "Casts A Surrealistic Spell",
+          "stars": "4.5"
+        }
+      ]
+    },
+    {
+      "title": "The Invite",
+      "slug": "the-invite",
+      "category": "films",
+      "director": "Olivia Wilde",
+      "year": "2026",
+      "starring": [
+        "Seth Rogen",
+        "Olivia Wilde",
+        "Penélope Cruz",
+        "Edward Norton"
+      ],
+      "image": "/assets/films-the-invite.webp",
+      "sourceImage": "https://raviklaassens.b-cdn.net/a24/films/the-invite/disc.webp?v=7",
+      "reviews": [
+        {
+          "publication": "The Times",
+          "quote": "Award-Worthy, Dazzling Sex Comedy",
+          "stars": "5"
+        },
+        {
+          "publication": "Los Angeles Times",
+          "quote": "Wincing Laughs Of Recognition",
+          "stars": "4.5"
+        }
+      ]
+    },
+    {
+      "title": "Tony",
+      "slug": "tony",
+      "category": "films",
+      "director": "Matt Johnson",
+      "year": "2026",
+      "starring": [
+        "Dominic Sessa",
+        "Emilia Jones",
+        "Leo Woodall",
+        "Antonio Banderas",
+        "Stavros Halkias"
+      ],
+      "image": "/assets/films-tony.webp",
+      "sourceImage": "https://raviklaassens.b-cdn.net/a24/films/tony/disc.webp?v=7",
+      "reviews": [
+        {
+          "publication": "Consequence",
+          "quote": "Power Of The Unexpected",
+          "stars": "4.5"
+        },
+        {
+          "publication": "The Globe and Mail",
+          "quote": "Rich One-Perfect-Summer Cinema",
+          "stars": "4.5"
+        }
+      ]
+    },
+    {
+      "title": "Marty Supreme",
+      "slug": "marty-supreme",
+      "category": "films",
+      "director": "Josh Safdie",
+      "year": "2025",
+      "starring": [
+        "Timothée Chalamet",
+        "Gwyneth Paltrow",
+        "Kevin O'Leary",
+        "Odessa A’zion",
+        "Abel Ferrara"
+      ],
+      "image": "/assets/films-marty-supreme.webp",
+      "sourceImage": "https://raviklaassens.b-cdn.net/a24/films/marty-supreme/disc.webp?v=7",
+      "reviews": [
+        {
+          "publication": "Variety",
+          "quote": "One Of Year’s Masterpieces",
+          "stars": "5"
+        },
+        {
+          "publication": "Slashfilm",
+          "quote": "Chalamet’s Best Career Performance",
+          "stars": "5"
+        }
+      ]
+    },
+    {
+      "title": "The Smashing Machine",
+      "slug": "the-smashing-machine",
+      "category": "films",
+      "director": "Benny Safdie",
+      "year": "2025",
+      "starring": [
+        "Dwayne Johnson",
+        "Emily Blunt"
+      ],
+      "image": "/assets/films-the-smashing-machine.webp",
+      "sourceImage": "https://raviklaassens.b-cdn.net/a24/films/the-smashing-machine/disc.webp?v=7",
+      "reviews": [
+        {
+          "publication": "Variety",
+          "quote": "Subtler And More Moving",
+          "stars": "4.5"
+        },
+        {
+          "publication": "Austin Chronicle",
+          "quote": "A Surprisingly Gentle Giant",
+          "stars": "4.5"
+        }
+      ]
+    },
+    {
+      "title": "The Brutalist",
+      "slug": "the-brutalist",
+      "category": "films",
+      "director": "Brady Corbet",
+      "year": "2024",
+      "starring": [
+        "Adrien Brody",
+        "Felicity Jones",
+        "Guy Pearce",
+        "Joe Alwyn",
+        "Raffey Cassidy"
+      ],
+      "image": "/assets/films-the-brutalist.webp",
+      "sourceImage": "https://raviklaassens.b-cdn.net/a24/films/the-brutalist/disc.webp?v=7",
+      "reviews": [
+        {
+          "publication": "The Guardian",
+          "quote": "Thrilling Directness And Storytelling Force",
+          "stars": "5"
+        },
+        {
+          "publication": "Rolling Stone",
+          "quote": "Storytelling Chops, Nerve And Verve",
+          "stars": "5"
+        }
+      ]
+    },
+    {
+      "title": "The Zone of Interest",
+      "slug": "the-zone-of-interest",
+      "category": "films",
+      "director": "Jonathan Glazer",
+      "year": "2023",
+      "starring": [
+        "Sandra Hüller",
+        "Christian Friedel"
+      ],
+      "image": "/assets/films-the-zone-of-interest.webp",
+      "sourceImage": "https://raviklaassens.b-cdn.net/a24/films/the-zone-of-interest/disc.webp?v=7",
+      "reviews": [
+        {
+          "publication": "Variety",
+          "quote": "Chilling And Profound",
+          "stars": "5"
+        },
+        {
+          "publication": "Time",
+          "quote": "Devastating In The Quietest Way",
+          "stars": "5"
+        }
+      ]
+    },
+    {
+      "title": "Everything Everywhere All at Once",
+      "slug": "everything-everywhere-all-at-once",
+      "category": "films",
+      "director": "Daniel Kwan, Daniel Scheinert",
+      "year": "2022",
+      "starring": [
+        "Michelle Yeoh",
+        "Stephanie Hsu",
+        "Ke Huy Quan",
+        "Jenny Slate",
+        "Harry Shum Jr."
+      ],
+      "image": "/assets/films-everything-everywhere-all-at-once.webp",
+      "sourceImage": "https://raviklaassens.b-cdn.net/a24/films/everything-everywhere-all-at-once/disc.webp?v=7",
+      "reviews": [
+        {
+          "publication": "The New York Times",
+          "quote": "Galaxy-Brain Head Trip",
+          "stars": "5"
+        },
+        {
+          "publication": "IndieWire",
+          "quote": "An Orgiastic Work Of Slaphappy Genius",
+          "stars": "5"
+        }
+      ]
+    },
+    {
+      "title": "Uncut Gems",
+      "slug": "uncut-gems",
+      "category": "films",
+      "director": "Josh Safdie, Benny Safdie",
+      "year": "2019",
+      "starring": [
+        "Adam Sandler",
+        "Lakeith Stanfield",
+        "Julia Fox",
+        "Kevin Garnett",
+        "Idina Menzel"
+      ],
+      "image": "/assets/films-uncut-gems.webp",
+      "sourceImage": "https://raviklaassens.b-cdn.net/a24/films/uncut-gems/disc.webp?v=7",
+      "reviews": [
+        {
+          "publication": "Variety",
+          "quote": "Locked Inside The Pinwheeling Brain",
+          "stars": "5"
+        },
+        {
+          "publication": "RogerEbert.com",
+          "quote": "Delusion Feeds Addiction",
+          "stars": "5"
+        }
+      ]
+    },
+    {
+      "title": "Hereditary",
+      "slug": "hereditary",
+      "category": "films",
+      "director": "Ari Aster",
+      "year": "2018",
+      "starring": [
+        "Toni Collette",
+        "Alex Wolff",
+        "Milly Shapiro",
+        "Ann Dowd",
+        "Gabriel Byrne"
+      ],
+      "image": "/assets/films-hereditary.webp",
+      "sourceImage": "https://raviklaassens.b-cdn.net/a24/films/hereditary/disc.webp?v=7",
+      "reviews": [
+        {
+          "publication": "The Guardian",
+          "quote": "A Brilliant Machine For Scaring Us",
+          "stars": "5"
+        },
+        {
+          "publication": "RogerEbert.com",
+          "quote": "Creepy Beyond Belief",
+          "stars": "5"
+        }
+      ]
+    },
+    {
+      "title": "Lady Bird",
+      "slug": "lady-bird",
+      "category": "films",
+      "director": "Greta Gerwig",
+      "year": "2017",
+      "starring": [
+        "Saoirse Ronan",
+        "Laurie Metcalf",
+        "Tracy Letts",
+        "Lucas Hedges",
+        "Timothée Chalamet"
+      ],
+      "image": "/assets/films-lady-bird.webp",
+      "sourceImage": "https://raviklaassens.b-cdn.net/a24/films/lady-bird/disc.webp?v=7",
+      "reviews": [
+        {
+          "publication": "The New York Times",
+          "quote": "Never Quite Like This",
+          "stars": "5"
+        },
+        {
+          "publication": "Los Angeles Times",
+          "quote": "As Warm As It Is Smart",
+          "stars": "5"
+        }
+      ]
+    },
+    {
+      "title": "Ex Machina",
+      "slug": "ex-machina",
+      "category": "films",
+      "director": "Alex Garland",
+      "year": "2015",
+      "starring": [
+        "Oscar Isaac",
+        "Domhnall Gleeson",
+        "Alicia Vikander"
+      ],
+      "image": "/assets/films-ex-machina.webp",
+      "sourceImage": "https://raviklaassens.b-cdn.net/a24/films/ex-machina/disc.webp?v=7",
+      "reviews": [
+        {
+          "publication": "RogerEbert.com",
+          "quote": "A Rare And Welcome Exception",
+          "stars": "5"
+        },
+        {
+          "publication": "Los Angeles Times",
+          "quote": "Shrewdly Imagined And Persuasively Made",
+          "stars": "5"
+        }
+      ]
+    }
+  ],
+  "television": [
+    {
+      "title": "Hazbin Hotel",
+      "slug": "hazbin-hotel",
+      "category": "television",
+      "director": "Vivienne Medrano",
+      "year": "2024–",
+      "starring": [
+        "Erika Henningsen",
+        "Stephanie Beatriz",
+        "Blake Roman"
+      ],
+      "image": "/assets/television-hazbin-hotel.webp",
+      "sourceImage": "https://raviklaassens.b-cdn.net/a24/tv/hazbin-hotel/disc.webp?v=7",
+      "reviews": [
+        {
+          "publication": "Collider",
+          "quote": "Outperformed Every Expectation I Had",
+          "stars": "4.5"
+        },
+        {
+          "publication": "IGN",
+          "quote": "Lovably Layered Characters",
+          "stars": "4"
+        }
+      ]
+    },
+    {
+      "title": "The Sympathizer",
+      "slug": "the-sympathizer",
+      "category": "television",
+      "director": "Park Chan-wook",
+      "year": "2024",
+      "starring": [
+        "Hoa Xuande",
+        "Fred Nguyen Khan",
+        "Toan Le",
+        "Vy Le",
+        "Alan Trong"
+      ],
+      "image": "/assets/television-the-sympathizer.webp",
+      "sourceImage": "https://raviklaassens.b-cdn.net/a24/tv/the-sympathizer/disc.webp?v=7",
+      "reviews": [
+        {
+          "publication": "Time",
+          "quote": "Vibrant, Faithful Yet Often Audacious",
+          "stars": "5"
+        },
+        {
+          "publication": "Collider",
+          "quote": "A Future Television Classic",
+          "stars": "4.5"
+        }
+      ]
+    },
+    {
+      "title": "Sunny",
+      "slug": "sunny",
+      "category": "television",
+      "director": "Katie Robbins, Lucy Tcherniak",
+      "year": "2024",
+      "starring": [
+        "Rashida Jones",
+        "Hidetoshi Nishijima",
+        "Joanna Sotomura",
+        "Judy Ongg",
+        "Jun Kunimura"
+      ],
+      "image": "/assets/television-sunny.webp",
+      "sourceImage": "https://raviklaassens.b-cdn.net/a24/tv/sunny/disc.webp?v=7",
+      "reviews": [
+        {
+          "publication": "The Observer",
+          "quote": "Original And Tonally Arresting",
+          "stars": "5"
+        },
+        {
+          "publication": "RogerEbert.com",
+          "quote": "Not Only An Engaging Thriller",
+          "stars": "4.5"
+        }
+      ]
+    },
+    {
+      "title": "Beef",
+      "slug": "beef",
+      "category": "television",
+      "director": "Lee Sung Jin",
+      "year": "2023–",
+      "starring": [
+        "Steven Yeun",
+        "Ali Wong",
+        "Joseph Lee",
+        "Young Mazino",
+        "Patti Yasutake"
+      ],
+      "image": "/assets/television-beef.webp",
+      "sourceImage": "https://raviklaassens.b-cdn.net/a24/tv/beef/disc.webp?v=7",
+      "reviews": [
+        {
+          "publication": "The Hollywood Reporter",
+          "quote": "Their Energy Crackles",
+          "stars": "5"
+        },
+        {
+          "publication": "Time",
+          "quote": "A Smart, Sophisticated Comedy",
+          "stars": "5"
+        }
+      ]
+    },
+    {
+      "title": "The Curse",
+      "slug": "the-curse",
+      "category": "television",
+      "director": "Nathan Fielder, Benny Safdie",
+      "year": "2023–2024",
+      "starring": [
+        "Emma Stone",
+        "Nathan Fielder",
+        "Benny Safdie"
+      ],
+      "image": "/assets/television-the-curse.webp",
+      "sourceImage": "https://raviklaassens.b-cdn.net/a24/tv/the-curse/disc.webp?v=7",
+      "reviews": [
+        {
+          "publication": "Consequence",
+          "quote": "Loaded, Unsettling, And Magnificent",
+          "stars": "5"
+        },
+        {
+          "publication": "Time",
+          "quote": "Strange, Riveting, And Often Hilarious",
+          "stars": "4.5"
+        }
+      ]
+    },
+    {
+      "title": "Such Brave Girls",
+      "slug": "such-brave-girls",
+      "category": "television",
+      "director": "Kat Sadler",
+      "year": "2023–",
+      "starring": [
+        "Kat Sadler",
+        "Lizzie Davidson",
+        "Louise Brealey"
+      ],
+      "image": "/assets/television-such-brave-girls.webp",
+      "sourceImage": "https://raviklaassens.b-cdn.net/a24/tv/such-brave-girls/disc.webp?v=7",
+      "reviews": [
+        {
+          "publication": "The Guardian",
+          "quote": "A Total Knockout",
+          "stars": "5"
+        },
+        {
+          "publication": "The Hollywood Reporter",
+          "quote": "Lethally Droll And Riotously Depressing",
+          "stars": "4"
+        }
+      ]
+    },
+    {
+      "title": "Irma Vep",
+      "slug": "irma-vep",
+      "category": "television",
+      "director": "Olivier Assayas",
+      "year": "2022",
+      "starring": [
+        "Alicia Vikander",
+        "Adria Arjona",
+        "Carrie Brownstein",
+        "Jerrod Carmichael"
+      ],
+      "image": "/assets/television-irma-vep.webp",
+      "sourceImage": "https://raviklaassens.b-cdn.net/a24/tv/irma-vep/disc.webp?v=7",
+      "reviews": [
+        {
+          "publication": "The A.V. Club",
+          "quote": "Wistful But Believable Dialogue",
+          "stars": "5"
+        },
+        {
+          "publication": "The Atlantic",
+          "quote": "A Pleasurable Lightness",
+          "stars": "4.5"
+        }
+      ]
+    },
+    {
+      "title": "Mo",
+      "slug": "mo",
+      "category": "television",
+      "director": "Mohammed Amer, Ramy Youssef",
+      "year": "2022–2025",
+      "starring": [
+        "Mohammed Amer",
+        "Teresa Ruiz",
+        "Omar Elba"
+      ],
+      "image": "/assets/television-mo.webp",
+      "sourceImage": "https://raviklaassens.b-cdn.net/a24/tv/mo/disc.webp?v=7",
+      "reviews": [
+        {
+          "publication": "The A.V. Club",
+          "quote": "Masterful Comic Relief",
+          "stars": "5"
+        },
+        {
+          "publication": "Time",
+          "quote": "Self-Deprecating Humor And Slice-Of-Life Scope",
+          "stars": "4.5"
+        }
+      ]
+    },
+    {
+      "title": "Dreaming Whilst Black",
+      "slug": "dreaming-whilst-black",
+      "category": "television",
+      "director": "Adjani Salmon, Maximilian Evans, Natasha Jatania, Laura Seixas",
+      "year": "2023–",
+      "starring": [
+        "Adjani Salmon",
+        "Dani Moseley",
+        "Rachel Adedeji",
+        "Babirye Bukilwa"
+      ],
+      "image": "/assets/television-dreaming-whilst-black.webp",
+      "sourceImage": "https://raviklaassens.b-cdn.net/a24/tv/dreaming-whilst-black/disc.webp?v=7",
+      "reviews": [
+        {
+          "publication": "The Guardian",
+          "quote": "Quietly Rips Up The Formula",
+          "stars": "5"
+        },
+        {
+          "publication": "RogerEbert.com",
+          "quote": "Hilarious And Authentic Portrayal",
+          "stars": "4.5"
+        }
+      ]
+    },
+    {
+      "title": "Euphoria",
+      "slug": "euphoria",
+      "category": "television",
+      "director": "Sam Levinson",
+      "year": "2019–2026",
+      "starring": [
+        "Zendaya",
+        "Hunter Schafer",
+        "Jacob Elordi",
+        "Sydney Sweeney",
+        "Alexa Demie"
+      ],
+      "image": "/assets/television-euphoria.webp",
+      "sourceImage": "https://raviklaassens.b-cdn.net/a24/tv/euphoria/disc.webp?v=7",
+      "reviews": [
+        {
+          "publication": "The Hollywood Reporter",
+          "quote": "An Absolute Revelation Here",
+          "stars": "5"
+        },
+        {
+          "publication": "Consequence",
+          "quote": "A Remarkable Zendaya Anchors Euphoria",
+          "stars": "4.5"
+        }
+      ]
+    },
+    {
+      "title": "Ramy",
+      "slug": "ramy",
+      "category": "television",
+      "director": "Ramy Youssef",
+      "year": "2019–2022",
+      "starring": [
+        "Ramy Youssef",
+        "Amr Waked",
+        "Mohammed Amer",
+        "Hiam Abbass"
+      ],
+      "image": "/assets/television-ramy.webp",
+      "sourceImage": "https://raviklaassens.b-cdn.net/a24/tv/ramy/disc.webp?v=7",
+      "reviews": [
+        {
+          "publication": "Entertainment Weekly",
+          "quote": "Ramy Is Essential Viewing",
+          "stars": "4.5"
+        },
+        {
+          "publication": "The Hollywood Reporter",
+          "quote": "Depth And Diversity Of Perspectives",
+          "stars": "4.5"
+        }
+      ]
+    },
+    {
+      "title": "Random Acts of Flyness",
+      "slug": "random-acts-of-flyness",
+      "category": "television",
+      "director": "Terence Nance",
+      "year": "2018–2022",
+      "starring": [
+        "Terence Nance",
+        "Jon Hamm",
+        "Whoopi Goldberg",
+        "Lakeith Stanfield"
+      ],
+      "image": "/assets/television-random-acts-of-flyness.webp",
+      "sourceImage": "https://raviklaassens.b-cdn.net/a24/tv/random-acts-of-flyness/disc.webp?v=7",
+      "reviews": [
+        {
+          "publication": "The New Yorker",
+          "quote": "A Work Of Meticulous Composition",
+          "stars": "5"
+        },
+        {
+          "publication": "The New York Times",
+          "quote": "Like Almost Nothing You've Seen",
+          "stars": "4.5"
+        }
+      ]
+    }
+  ]
+}
