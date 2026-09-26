@@ -5,9 +5,12 @@ const detail = $('detail');
 const portal = $('portal');
 const iris = $('portal-iris');
 const zoomDisc = $('portal-disc');
+const siteRoot = new URL(document.currentScript.src).pathname.replace(/\/app\.js$/, '');
+const withRoot = (path) => siteRoot + path;
+const routePath = () => location.pathname.slice(siteRoot.length) || '/';
 
 let data = { films: [], television: [] };
-let category = location.pathname.startsWith('/television') ? 'television' : 'films';
+let category = routePath().startsWith('/television') ? 'television' : 'films';
 let catalog = [];
 let currentIndex = 0;
 let discElements = [];
@@ -20,8 +23,8 @@ let suppressClick = false;
 
 const current = () => catalog[currentIndex];
 const stars = (review) => '★'.repeat(Math.floor(Number(review.stars || 0))) + (Number(review.stars || 0) % 1 ? '½' : '');
-const basePath = () => category === 'films' ? '/' : '/television/';
-const detailPath = (film) => `/production/${film.slug}/`;
+const basePath = () => withRoot(category === 'films' ? '/' : '/television/');
+const detailPath = (film) => withRoot(`/production/${film.slug}/`);
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 function slotFor(index) {
@@ -39,7 +42,7 @@ function createDiscs() {
     const face = document.createElement('span');
     face.className = 'disc-face';
     const image = document.createElement('img');
-    image.dataset.src = film.image;
+    image.dataset.src = withRoot(film.image);
     image.alt = '';
     image.draggable = false;
     const hub = document.createElement('span');
@@ -153,7 +156,7 @@ function populateDetail(film) {
   $('detail-title').textContent = film.title;
   $('detail-category').textContent = film.category === 'films' ? 'A24 FILM' : 'A24 TELEVISION';
   $('detail-credits').textContent = `DIRECTED BY ${film.director}   ·   STARRING ${film.starring.join(', ')}`;
-  $('detail-art').src = film.image;
+  $('detail-art').src = withRoot(film.image);
   $('detail-art').alt = `${film.title} disc artwork`;
   const lines = $('detail-lines');
   lines.replaceChildren();
@@ -192,7 +195,7 @@ function portalGeometry(button) {
 function preparePortal(film, geometry) {
   portal.hidden = false;
   portal.style.opacity = '1';
-  $('portal-image').src = film.image;
+  $('portal-image').src = withRoot(film.image);
   zoomDisc.style.left = `${geometry.rect.left}px`;
   zoomDisc.style.top = `${geometry.rect.top}px`;
   zoomDisc.style.width = `${geometry.rect.width}px`;
@@ -303,7 +306,7 @@ function setCategory(nextCategory, index = 0) {
 }
 
 function setInitialRoute() {
-  const match = location.pathname.match(/^\/production\/([^/]+)/);
+  const match = routePath().match(/^\/production\/([^/]+)/);
   if (!match) { setCategory(category); return; }
   const selected = Object.entries(data).flatMap(([group, items]) => items.map((film, index) => ({ group, film, index }))).find((entry) => entry.film.slug === match[1]);
   if (!selected) { setCategory(category); return; }
@@ -363,7 +366,7 @@ stage.addEventListener('pointerleave', () => {
   if (face) { face.style.removeProperty('--tilt-x'); face.style.removeProperty('--tilt-y'); }
 });
 window.addEventListener('popstate', () => {
-  const match = location.pathname.match(/^\/production\/([^/]+)/);
+  const match = routePath().match(/^\/production\/([^/]+)/);
   if (!match && detailShown) closeDetail(false);
   else if (match && !detailShown) {
     const index = catalog.findIndex((film) => film.slug === match[1]);
@@ -371,7 +374,7 @@ window.addEventListener('popstate', () => {
   }
 });
 
-fetch('/catalog.json').then((response) => {
+fetch(withRoot('/catalog.json')).then((response) => {
   if (!response.ok) throw new Error('Catalog unavailable');
   return response.json();
 }).then((catalogData) => {
