@@ -39,3 +39,6 @@ body.direct-detail .film-info,body.direct-detail .disc-gallery,body.direct-detai
 .site-loader.is-complete .loader-head{transform:translate(-50%,-12px)}.site-loader.is-leaving{opacity:0;pointer-events:none}
 @keyframes loader-spin{to{transform:rotate(360deg)}}@keyframes loader-bob{from{translate:0 -4px}to{translate:0 4px}}
 @media(max-width:767px){.loader-head{gap:12px}.loader-counter{left:9%;top:19%;font-size:clamp(62px,17vw,82px)}.loader-disc{left:55%;top:51%;width:min(67vw,360px)}.site-loader.is-complete .loader-disc{transform:translate(-50%,-50%) scale(1.04) rotate(-17deg) rotateX(12deg) rotateY(-27deg)}.loader-side{top:auto;bottom:82px;font-size:11px}}
+.disc-item:not(.is-ready){opacity:0;pointer-events:none}
+.site-loader:not(.has-image) .loader-disc{opacity:0}
+.site-loader.has-error .loader-spinner{display:none}.loader-retry{position:absolute;z-index:7;left:50%;bottom:52px;transform:translateX(-50%);border:1px solid #111;background:transparent;color:#111;padding:8px 20px;font-size:12px;cursor:pointer}

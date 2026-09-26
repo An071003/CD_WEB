@@ -17,6 +17,7 @@ let category = routePath().startsWith('/television') ? 'television' : 'films';
 let catalog = [];
 let currentIndex = 0;
 let discElements = [];
+const imageLoads = new WeakMap();
 let detailShown = false;
 let transitioning = false;
 let moving = false;
@@ -33,6 +34,10 @@ const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 const loadingStartedAt = performance.now();
 let loadingProgress = 0;
 if (loader) $('gallery').inert = true;
+const loaderArtworkReady = loader ? loaderImage.decode().then(() => {
+  loader.classList.add('has-image');
+  return true;
+}).catch(() => false) : Promise.resolve(false);
 const loadingTimer = loader && setInterval(() => {
   loadingProgress = Math.min(92, Math.floor((performance.now() - loadingStartedAt) / 15));
   loaderCounter.textContent = String(loadingProgress).padStart(2, '0');
@@ -40,18 +45,30 @@ const loadingTimer = loader && setInterval(() => {
 
 async function finishLoading() {
   if (!loader) return;
-  const displayedImage = discElements[currentIndex]?.querySelector('img');
   const assetsReady = Promise.allSettled([
-    loaderImage.decode(),
-    displayedImage?.decode(),
+    loaderArtworkReady,
+    ensureVisibleImages(currentIndex),
     document.fonts.ready,
   ]);
   const minimum = reducedMotion.matches ? 0 : 1200;
-  await Promise.all([
-    Promise.race([assetsReady, delay(5000)]),
+  const [assets] = await Promise.all([
+    assetsReady,
     delay(Math.max(0, minimum - (performance.now() - loadingStartedAt))),
   ]);
   clearInterval(loadingTimer);
+  if (assets[1].status !== 'fulfilled' || !assets[1].value) {
+    loader.classList.add('has-error');
+    loader.setAttribute('aria-label', 'Artwork unavailable');
+    loader.querySelector('.loader-head span').textContent = 'Artwork unavailable';
+    loaderCounter.textContent = '—';
+    const retry = document.createElement('button');
+    retry.type = 'button';
+    retry.className = 'loader-retry';
+    retry.textContent = 'Retry';
+    retry.addEventListener('click', () => location.reload());
+    loader.append(retry);
+    return;
+  }
   if (!reducedMotion.matches) {
     const from = loadingProgress;
     const start = performance.now();
@@ -93,6 +110,7 @@ function createDiscs() {
     image.dataset.src = withRoot(film.image);
     image.alt = '';
     image.draggable = false;
+    image.decoding = 'async';
     const hub = document.createElement('span');
     hub.className = 'disc-hub';
     face.append(image, hub);
@@ -110,6 +128,34 @@ function createDiscs() {
   positionDiscs();
 }
 
+function ensureDiscImage(index, highPriority = false) {
+  const button = discElements[index];
+  if (!button) return Promise.resolve(false);
+  const image = button.querySelector('img');
+  if (highPriority) image.fetchPriority = 'high';
+  if (!image.getAttribute('src')) image.src = image.dataset.src;
+  let ready = imageLoads.get(image);
+  if (!ready) {
+    ready = image.decode().then(() => {
+      button.classList.add('is-ready');
+      return true;
+    }).catch(() => {
+      button.classList.remove('is-ready');
+      imageLoads.delete(image);
+      return false;
+    });
+    imageLoads.set(image, ready);
+  }
+  return ready;
+}
+
+async function ensureVisibleImages(center) {
+  if (!discElements[center]) return false;
+  const indices = [center - 1, center, center + 1].filter((index) => index >= 0 && index < discElements.length);
+  const ready = await Promise.all(indices.map((index) => ensureDiscImage(index, index === center)));
+  return ready[indices.indexOf(center)];
+}
+
 function positionDiscs() {
   discElements.forEach((button, index) => {
     const slot = slotFor(index);
@@ -118,7 +164,7 @@ function positionDiscs() {
     button.setAttribute('aria-hidden', slot === 'far' || Math.abs(Number(slot)) === 2 ? 'true' : 'false');
     button.setAttribute('aria-label', slot === '0' ? `Open ${catalog[index].title}` : `Browse to ${catalog[index].title}`);
     const image = button.querySelector('img');
-    if (slot !== 'far' && !image.getAttribute('src')) image.src = image.dataset.src;
+    if (slot !== 'far') void ensureDiscImage(index, slot === '0');
     image.alt = slot === '0' ? `${catalog[index].title} disc artwork` : '';
     if (slot !== '0') button.classList.remove('is-flipped');
   });
@@ -176,29 +222,41 @@ function toggleIndex(force) {
   $('index-toggle').setAttribute('aria-expanded', String(open));
 }
 
-function select(index) {
-  if (transitioning || detailShown || index === currentIndex) { toggleIndex(false); return; }
+async function navigateTo(index, animateInfo) {
+  if (transitioning || detailShown || moving || !catalog[index] || index === currentIndex) {
+    if (!animateInfo) toggleIndex(false);
+    return;
+  }
+  moving = true;
+  stage.setAttribute('aria-busy', 'true');
+  if (!animateInfo) toggleIndex(false);
+  const ready = await ensureVisibleImages(index);
+  if (!ready) {
+    moving = false;
+    stage.removeAttribute('aria-busy');
+    return;
+  }
+  if (animateInfo) {
+    $('film-info').classList.add('is-swapping');
+    $('reviews').classList.add('is-swapping');
+  }
   currentIndex = index;
   positionDiscs();
-  fillFilmInfo();
-  toggleIndex(false);
+  if (animateInfo) {
+    setTimeout(() => {
+      fillFilmInfo();
+      $('film-info').classList.remove('is-swapping');
+      $('reviews').classList.remove('is-swapping');
+    }, reducedMotion.matches ? 0 : 230);
+  } else fillFilmInfo();
+  setTimeout(() => {
+    moving = false;
+    stage.removeAttribute('aria-busy');
+  }, reducedMotion.matches ? 0 : 760);
 }
 
-function move(delta) {
-  if (transitioning || detailShown || moving || !catalog.length) return;
-  moving = true;
-  $('film-info').classList.add('is-swapping');
-  $('reviews').classList.add('is-swapping');
-  if (currentIndex + delta < 0 || currentIndex + delta >= catalog.length) { moving = false; $('film-info').classList.remove('is-swapping'); $('reviews').classList.remove('is-swapping'); return; }
-  currentIndex += delta;
-  positionDiscs();
-  setTimeout(() => {
-    fillFilmInfo();
-    $('film-info').classList.remove('is-swapping');
-    $('reviews').classList.remove('is-swapping');
-  }, reducedMotion.matches ? 0 : 230);
-  setTimeout(() => { moving = false; }, reducedMotion.matches ? 0 : 760);
-}
+function select(index) { void navigateTo(index, false); }
+function move(delta) { void navigateTo(currentIndex + delta, true); }
 
 function populateDetail(film) {
   $('detail-title').textContent = film.title;
@@ -240,10 +298,17 @@ function portalGeometry(button) {
   return { rect, cx, cy, dx, dy, scale, radius };
 }
 
-function preparePortal(film, geometry) {
+async function preparePortal(film, geometry) {
+  const image = $('portal-image');
+  image.src = withRoot(film.image);
+  try {
+    await image.decode();
+    zoomDisc.style.visibility = '';
+  } catch {
+    zoomDisc.style.visibility = 'hidden';
+  }
   portal.hidden = false;
   portal.style.opacity = '1';
-  $('portal-image').src = withRoot(film.image);
   zoomDisc.style.left = `${geometry.rect.left}px`;
   zoomDisc.style.top = `${geometry.rect.top}px`;
   zoomDisc.style.width = `${geometry.rect.width}px`;
@@ -258,10 +323,11 @@ function finishPortal(animations) {
   portal.style.opacity = '1';
   iris.style.clipPath = '';
   zoomDisc.style.opacity = '';
+  zoomDisc.style.visibility = '';
 }
 
 async function openDetail(updateHistory = true) {
-  if (transitioning || detailShown || !current()) return;
+  if (transitioning || detailShown || moving || !current()) return;
   transitioning = true;
   toggleIndex(false);
   const film = current();
@@ -279,7 +345,7 @@ async function openDetail(updateHistory = true) {
     return;
   }
   const g = portalGeometry(button);
-  preparePortal(film, g);
+  await preparePortal(film, g);
   button.style.visibility = 'hidden';
   const enter = [
     iris.animate([{ clipPath: `circle(0px at ${g.cx}px ${g.cy}px)` }, { clipPath: `circle(${g.radius}px at ${g.cx}px ${g.cy}px)` }], { duration: 780, easing: 'cubic-bezier(.23,.65,.12,1)', fill: 'forwards' }),
@@ -322,7 +388,7 @@ async function closeDetail(updateHistory = true) {
   detail.classList.add('is-leaving');
   await delay(240);
   const g = portalGeometry(discElements[currentIndex]);
-  preparePortal(film, g);
+  await preparePortal(film, g);
   detail.hidden = true;
   detail.classList.remove('is-leaving');
   detailShown = false;
@@ -371,7 +437,7 @@ $('index-toggle').addEventListener('click', () => toggleIndex());
 $('detail-back').addEventListener('click', () => closeDetail());
 document.addEventListener('keydown', (event) => {
   if (event.key === 'Escape') { if (detailShown) closeDetail(); else toggleIndex(false); return; }
-  if (detailShown || transitioning || event.target.closest('.index-panel')) return;
+  if (detailShown || transitioning || moving || event.target.closest('.index-panel')) return;
   if (event.key === 'ArrowRight') { event.preventDefault(); move(1); }
   if (event.key === 'ArrowLeft') { event.preventDefault(); move(-1); }
   if (event.key === 'Enter' && (event.target === document.body || stage.contains(event.target))) {
