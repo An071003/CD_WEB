@@ -42,3 +42,22 @@ body.direct-detail .film-info,body.direct-detail .disc-gallery,body.direct-detai
 .disc-item:not(.is-ready){opacity:0;pointer-events:none}
 .site-loader:not(.has-image) .loader-disc{opacity:0}
 .site-loader.has-error .loader-spinner{display:none}.loader-retry{position:absolute;z-index:7;left:50%;bottom:52px;transform:translateX(-50%);border:1px solid #111;background:transparent;color:#111;padding:8px 20px;font-size:12px;cursor:pointer}
+
+/* Each disc has separate front, rear and metal edge planes. */
+.disc-item{perspective:1100px;transform-style:preserve-3d;cursor:grab;user-select:none;-webkit-user-select:none}
+.disc-item[data-slot="0"]{touch-action:none}.disc-item.is-dragging{cursor:grabbing;z-index:10;touch-action:none}
+.disc-item .disc-face{--base-z:-17deg;--base-x:12deg;--base-y:-27deg;display:block;position:relative;width:100%;height:100%;border-radius:50%;overflow:visible;box-shadow:none;animation:float-disc 5s ease-in-out infinite alternate;transform-style:preserve-3d;transform:rotateZ(calc(var(--base-z) + var(--drag-z,0deg))) rotateX(calc(var(--base-x) + var(--drag-x,0deg))) rotateY(calc(var(--base-y) + var(--drag-y,0deg) + var(--flip-y,0deg)));transition:transform 1.05s cubic-bezier(.2,1.35,.32,1),filter .3s}
+.disc-item.is-dragging .disc-face{animation:none;transition:none}
+.disc-item[data-slot="-1"] .disc-face{--base-z:8deg;--base-x:4deg;--base-y:17deg;transform:rotateZ(calc(var(--base-z) + var(--drag-z,0deg))) rotateX(calc(var(--base-x) + var(--drag-x,0deg))) rotateY(calc(var(--base-y) + var(--drag-y,0deg) + var(--flip-y,0deg)))}
+.disc-item[data-slot="1"] .disc-face{--base-z:16deg;--base-x:5deg;--base-y:-20deg;transform:rotateZ(calc(var(--base-z) + var(--drag-z,0deg))) rotateX(calc(var(--base-x) + var(--drag-x,0deg))) rotateY(calc(var(--base-y) + var(--drag-y,0deg) + var(--flip-y,0deg)))}
+.disc-rim,.disc-front,.disc-back{position:absolute;inset:0;display:block;aspect-ratio:1;border-radius:50%;backface-visibility:hidden}
+.disc-rim{transform:translateZ(var(--depth));border:2px solid #8e969b;background:radial-gradient(circle,transparent 0 94%,#d9dcdd 96%,#7c858a 99%,#e6e7e7 100%);box-shadow:0 0 1px #4c5458;pointer-events:none;backface-visibility:visible}
+.disc-front,.disc-back{overflow:hidden;border:2px solid #b5bbbe;box-shadow:inset 0 0 0 1px #e8e9e9,1px 2px 5px #0003}
+.disc-front{transform:translateZ(5px)}.disc-back{transform:rotateY(180deg) translateZ(5px);background:radial-gradient(circle at 55% 40%,transparent 26%,#020b0966 100%),repeating-radial-gradient(circle at 47% 52%,#2f4841 0 1px,#182e29 1.5px 2.5px,#3b5149 3px 3.5px);color:#d5d9d6;text-align:center}
+.disc-item .disc-front img{width:100%;height:100%;object-fit:cover;filter:brightness(.82) saturate(.82);pointer-events:none}
+.disc-front::after,.disc-back::after{content:"";position:absolute;inset:0;border-radius:50%;background:linear-gradient(125deg,#fff5 0%,transparent 34%,#0002 77%,#fff2 100%);pointer-events:none}
+.disc-front .disc-hub,.disc-back .disc-hub{z-index:2}
+.disc-item.is-flipped{--flip-y:180deg}.disc-item.is-flipped .disc-front img{filter:brightness(.82) saturate(.82)}
+.disc-item[data-slot="0"]:hover .disc-face{filter:none}.disc-item[data-slot="0"]:hover .disc-front img{filter:brightness(.88) saturate(.88)}
+.disc-item.is-dragging::after{content:"";position:absolute;inset:-3%;border:2px solid #191919;border-radius:47% 53% 49% 51%;transform:rotate(-13deg) scale(1.05);pointer-events:none;opacity:.72}
+@media(prefers-reduced-motion:reduce){.disc-item .disc-face{animation:none;transition-duration:.01ms}}

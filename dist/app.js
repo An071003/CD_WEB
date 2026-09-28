@@ -22,8 +22,9 @@ let detailShown = false;
 let transitioning = false;
 let moving = false;
 let lastWheelAt = 0;
-let swipeStart = null;
 let suppressClick = false;
+let discDrag = null;
+let gallerySwipe = null;
 
 const current = () => catalog[currentIndex];
 const stars = (review) => '★'.repeat(Math.floor(Number(review.stars || 0))) + (Number(review.stars || 0) % 1 ? '½' : '');
@@ -106,6 +107,14 @@ function createDiscs() {
     button.dataset.index = String(index);
     const face = document.createElement('span');
     face.className = 'disc-face';
+    for (let layer = -4; layer <= 4; layer += 2) {
+      const rim = document.createElement('span');
+      rim.className = 'disc-rim';
+      rim.style.setProperty('--depth', `${layer}px`);
+      face.append(rim);
+    }
+    const front = document.createElement('span');
+    front.className = 'disc-front';
     const image = document.createElement('img');
     image.dataset.src = withRoot(film.image);
     image.alt = '';
@@ -113,7 +122,13 @@ function createDiscs() {
     image.decoding = 'async';
     const hub = document.createElement('span');
     hub.className = 'disc-hub';
-    face.append(image, hub);
+    front.append(image, hub);
+    const back = document.createElement('span');
+    back.className = 'disc-back';
+    const backHub = document.createElement('span');
+    backHub.className = 'disc-hub';
+    back.append(backHub);
+    face.append(front, back);
     button.append(face);
     button.addEventListener('click', () => {
       if (suppressClick) { suppressClick = false; return; }
@@ -456,29 +471,55 @@ stage.addEventListener('wheel', (event) => {
   lastWheelAt = now;
   move(event.deltaY > 0 ? 1 : -1);
 }, { passive: true });
-stage.addEventListener('pointerdown', (event) => { swipeStart = { x: event.clientX, y: event.clientY }; });
-stage.addEventListener('pointerup', (event) => {
-  if (!swipeStart) return;
-  const dx = event.clientX - swipeStart.x;
-  const dy = event.clientY - swipeStart.y;
-  if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy)) {
-    suppressClick = true;
-    move(dx < 0 ? 1 : -1);
-    setTimeout(() => { suppressClick = false; }, 400);
+stage.addEventListener('pointerdown', (event) => {
+  const button = event.target.closest('.disc-item');
+  if (!button || button.dataset.slot !== '0' || transitioning || moving || detailShown || event.button !== 0) {
+    if (event.pointerType === 'touch') gallerySwipe = { id: event.pointerId, x: event.clientX, y: event.clientY };
+    return;
   }
-  swipeStart = null;
+  discDrag = { id: event.pointerId, button, x: event.clientX, y: event.clientY, moved: false };
+  button.classList.add('is-dragging');
+  button.setPointerCapture(event.pointerId);
+  event.preventDefault();
 });
 stage.addEventListener('pointermove', (event) => {
-  if (!catalog.length || detailShown || moving || event.pointerType === 'touch') return;
-  const face = discElements[currentIndex]?.querySelector('.disc-face');
-  if (!face) return;
-  face.style.setProperty('--tilt-x', `${((event.clientX / innerWidth) - .5) * 6}deg`);
-  face.style.setProperty('--tilt-y', `${((event.clientY / innerHeight) - .5) * -5}deg`);
+  if (!discDrag || event.pointerId !== discDrag.id) return;
+  const dx = event.clientX - discDrag.x;
+  const dy = event.clientY - discDrag.y;
+  if (Math.hypot(dx, dy) > 7) discDrag.moved = true;
+  const face = discDrag.button.querySelector('.disc-face');
+  face.style.setProperty('--drag-y', `${Math.max(-220, Math.min(220, dx * .72))}deg`);
+  face.style.setProperty('--drag-x', `${Math.max(-190, Math.min(190, -dy * .72))}deg`);
+  face.style.setProperty('--drag-z', `${Math.max(-24, Math.min(24, dx * .055))}deg`);
 });
-stage.addEventListener('pointerleave', () => {
-  const face = discElements[currentIndex]?.querySelector('.disc-face');
-  if (face) { face.style.removeProperty('--tilt-x'); face.style.removeProperty('--tilt-y'); }
-});
+function releaseDisc(event) {
+  if (!discDrag || event.pointerId !== discDrag.id) {
+    if (gallerySwipe?.id === event.pointerId) {
+      const dx = event.clientX - gallerySwipe.x;
+      const dy = event.clientY - gallerySwipe.y;
+      gallerySwipe = null;
+      if (event.type === 'pointerup' && Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy)) {
+        suppressClick = true;
+        move(dx < 0 ? 1 : -1);
+        setTimeout(() => { suppressClick = false; }, 400);
+      }
+    }
+    return;
+  }
+  const { button, moved } = discDrag;
+  discDrag = null;
+  button.classList.remove('is-dragging');
+  const face = button.querySelector('.disc-face');
+  face.style.removeProperty('--drag-x');
+  face.style.removeProperty('--drag-y');
+  face.style.removeProperty('--drag-z');
+  if (moved) {
+    suppressClick = true;
+    setTimeout(() => { suppressClick = false; }, 400);
+  }
+}
+stage.addEventListener('pointerup', releaseDisc);
+stage.addEventListener('pointercancel', releaseDisc);
 window.addEventListener('popstate', () => {
   const match = routePath().match(/^\/production\/([^/]+)/);
   if (!match && detailShown) closeDetail(false);
